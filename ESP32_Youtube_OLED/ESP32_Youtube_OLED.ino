@@ -43,8 +43,8 @@ SSD1306  display(0x3c, 5, 4);
 YoutubeApi api(API_KEY, client);
 
 // Global Variables
-int api_mtbs = 60000; //mean time between api requests
-long api_lasttime;    //last time api request has been done
+uint8_t screen = 0;
+unsigned long fast_update, middle_update;
 long subscriberCount, viewCount, commentCount, videoCount, subs = 0;
 
 /******************************************************************************/
@@ -57,7 +57,7 @@ void setup() {
     // Start the OLED Display
     display.init();
     display.setFont(ArialMT_Plain_24);
-    display.flipScreenVertically();
+    display.flipScreenVertically();                 // this is to flip the screen 180 degrees
 
     display.setColor(WHITE);
     display.setTextAlignment(TEXT_ALIGN_CENTER);
@@ -95,9 +95,22 @@ void setup() {
 /******************************************************************************/
 void loop() {
 
-  if (millis() > api_lasttime + api_mtbs)  {
+  //-------------------------------------------------------------------------------------------
+  // Timed Code
+  //-------------------------------------------------------------------------------------------
+  // Every 10 Seconds
+  if ((millis()-fast_update)>10000) { // 10 Seconds
+    screen++;
+    if (screen > 1) {
+      screen = 0;
+    }
+    fast_update = millis();
+  }
+
+  // Every 60 Seconds
+  if ((millis()-middle_update)>60000) { // 60 Seconds
     getYoutubeData();
-    api_lasttime = millis();
+    middle_update = millis();
   }
 
   drawOLED();
@@ -150,26 +163,47 @@ void drawOLED(){
       
       display.setFont(ArialMT_Plain_10);
       display.setTextAlignment(TEXT_ALIGN_CENTER);
-      display.drawString( 31, 14, "Subscribers");
-      display.drawString( 95, 14, "View Count");
 
-      display.setTextAlignment(TEXT_ALIGN_CENTER);
-      
-      if (subscriberCount > 9999) {
-        display.setFont(ArialMT_Plain_16);
-        display.drawString( 31, 35, String(subscriberCount));
-      } else {
-        display.setFont(ArialMT_Plain_24);
-        display.drawString( 31, 30, String(subscriberCount));
+      switch (screen) {
+        case 0:
+          display.drawString( 31, 14, "Subscribers");
+          display.drawString( 95, 14, "View Count");
+          if (subscriberCount > 9999) {
+            display.setFont(ArialMT_Plain_16);
+            display.drawString( 31, 35, String(subscriberCount));
+          } else {
+            display.setFont(ArialMT_Plain_24);
+            display.drawString( 31, 30, String(subscriberCount));
+          }
+    
+          if (viewCount > 9999) {
+            display.setFont(ArialMT_Plain_16);
+            display.drawString( 95, 35, String(viewCount));          
+          } else {
+            display.setFont(ArialMT_Plain_24);
+            display.drawString( 95, 30, String(viewCount));   
+          }        
+          break;
+        case 1:
+          display.drawString( 31, 14, "Comments");
+          display.drawString( 95, 14, "Video Count");
+          if (commentCount > 9999) {
+            display.setFont(ArialMT_Plain_16);
+            display.drawString( 31, 35, String(commentCount));
+          } else {
+            display.setFont(ArialMT_Plain_24);
+            display.drawString( 31, 30, String(commentCount));
+          }
+    
+          if (videoCount > 9999) {
+            display.setFont(ArialMT_Plain_16);
+            display.drawString( 95, 35, String(videoCount));          
+          } else {
+            display.setFont(ArialMT_Plain_24);
+            display.drawString( 95, 30, String(videoCount));   
+          }  
+          break;
       }
-
-      if (viewCount > 9999) {
-        display.setFont(ArialMT_Plain_16);
-        display.drawString( 95, 35, String(viewCount));          
-      } else {
-        display.setFont(ArialMT_Plain_24);
-        display.drawString( 95, 30, String(viewCount));   
-      }
-      
       display.display();
+      
 } //drawOLED()
