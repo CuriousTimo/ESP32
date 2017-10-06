@@ -1,4 +1,4 @@
-Code for an ESP32 with an itegrated OLED displaying YouTube data.
+Code for an ESP32 with an integrated OLED displaying YouTube data.
 
 Links:
 - Video
