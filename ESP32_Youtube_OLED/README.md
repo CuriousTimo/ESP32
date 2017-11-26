@@ -1,4 +1,4 @@
-# ESP32 Omniksol/MQTT OLED
+# ESP32 YouTube Counter OLED
 Code for an ESP32 with an integrated OLED displaying data from an Omniksol PV Inverter and sending the data to a MQTT Broker.
 
 Links:
