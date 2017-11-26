@@ -1,4 +1,4 @@
-# ESP32 YouTube OLED
+# ESP32 Omniksol/MQTT Gateway
 Code for an ESP32 with an integrated OLED displaying YouTube data.
 
 Links:
